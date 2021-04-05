@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VendingMachine_TTD
+namespace VendingMachine
 {
     interface ISelectProduct
     {
-        void SelectProduct(string product, double enteredAmount);
-        
+        bool SelectProduct(string product);
+
+        void GetProducts();
     }
+    //product list
 }

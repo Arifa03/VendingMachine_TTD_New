@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VendingMachine_TTD
+namespace VendingMachine
 {
     interface IAcceptCoin
     {
-        void CheckValidCoin();        
+        void CheckValidCoin(double enteredCoin);
+        void GetCoins();
     }
+    //add list Coin
 }

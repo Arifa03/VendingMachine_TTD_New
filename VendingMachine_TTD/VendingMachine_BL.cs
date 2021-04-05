@@ -5,116 +5,94 @@ using System.Text;
 using System.Threading.Tasks;
 using VendingMachine;
 
-namespace VendingMachine_TTD
+namespace VendingMachine
 {
-    class VendingMachine_BL : IAcceptCoin, ISelectProduct, IDespenceProduct
+    public class VendingMachine_BL : IAcceptCoin, ISelectProduct, IDespenceProduct
     {
         public double Total_Amount = 0.0;
         double _enteredCoin = 0.0;
 
         #region CoinConst
 
-        public const double Nickels = 0.05;
-        public const double Dimes = 0.1;
-        public const double Quarter = 0.25;
+        IDictionary<double, string> coinList = new Dictionary<double, string>();
+
+
         #endregion
 
         #region ProductConsts
 
-        public const string product_1 = "COLA";
-        public const string product_2 = "CHIPS";
-        public const string product_3 = "CANDY";
 
-        public const double prod_1_Amount = 1.00;
-        public const double prod_2_Amount = 0.50;
-        public const double prod_3_Amount = 0.65;
+        IDictionary<string, double> productList = new Dictionary<string, double>();
 
         #endregion
 
-        public VendingMachine_BL(double enteredCoin)
+        public VendingMachine_BL() //double enteredCoin
         {
-            this._enteredCoin = enteredCoin;
-            Total_Amount = this._enteredCoin;
-
+            //this._enteredCoin = enteredCoin;
+            //Total_Amount =+ this._enteredCoin;
+            GetCoins();
+            GetProducts();
         }
-        public VendingMachine_BL()
+
+        public void GetCoins()
         {
-            Total_Amount= this._enteredCoin;
+            coinList.Add(0.05, "Nickels");
+            coinList.Add(0.1, "Dimes");
+            coinList.Add(0.25, "Quarter");
+        }
+
+        public void GetProducts()
+        {
+            productList.Add("COLA", 1.00);
+            productList.Add("CHIPS", 0.5);
+            productList.Add("CANDY", 0.65);
         }
 
         #region CheckCoinMethod
-        public void CheckValidCoin()
+        public void CheckValidCoin(double enteredAmount)
         {
-            if (_enteredCoin == Nickels || _enteredCoin == Dimes || _enteredCoin == Quarter)
+            try
             {
-
-                Console.WriteLine($"{_enteredCoin} is valid amount, " +
-                    $"Do you want to enter more coins : Y/N");
-                string moreCoin = Console.ReadLine();
-                switch (moreCoin.ToUpper())
+                if (coinList.ContainsKey(enteredAmount)) 
                 {
-                    case "Y":
-                        UserCoinOptions.UserOptions();
-                        Total_Amount += _enteredCoin;
-                        break;
-                    case "N":
-                        UserProductOptions.UserProductOpts(_enteredCoin);
-                        string productName = UserProductOptions.ProductName;
-                        SelectProduct(productName, _enteredCoin);
-                        break;
-                    default:
-                        break;
+                    Total_Amount += enteredAmount;                    
                 }
-
-                Console.ReadLine();
+                else
+                {
+                    Console.WriteLine($"{enteredAmount} is invalid coin");                    
+                }
+                Console.WriteLine($"Total Coin Amount: {Total_Amount}");
             }
-            else
+            catch (Exception)
             {
-                Console.WriteLine($"{_enteredCoin} is invalid coin");
-                Console.WriteLine("Do you enter coin again? Y/N");
-                string reset = Console.ReadLine();
-                switch (reset.ToUpper())
-                {
-                    case "Y":
-                        UserCoinOptions.UserOptions();
-                        Total_Amount += _enteredCoin;
-                        break;
-
-                    case "N":
-                        Console.WriteLine("We can't move further..");
-                        break;
-
-                    default:
-                        Console.WriteLine("Invalid Coin");
-                        break;
-
-
-                }
+                Console.WriteLine("There is some issue cannot proceed further..");
             }
+
         }
         #endregion
 
         #region SelectProduct 
-        public void SelectProduct(string product, double enteredAmount)
-        {
-            if (product == product_1 || product == product_2 || product == product_3)
+        public bool SelectProduct(string product)
+        {            
+            if (productList.ContainsKey(product.ToUpper()))
             {
-                //check sufficient balance
-                bool isTrue = CheckSufficientBalance(product);
-                if (isTrue == true)
+                if (Total_Amount >= productList[product])
                 {
                     DespenceProduct(product);
+                    Total_Amount = Total_Amount - productList[product];
+                    Console.WriteLine($"The Remaining Amount in your account is {Total_Amount}");
+                    return true;
                 }
                 else
                 {
-                    Console.WriteLine($"{product} not a valid product.");
-                    Console.ReadLine();
+                    Console.WriteLine("Insufficient Balance.");
                 }
             }
             else
             {
-
+                Console.WriteLine($"{product} not a valid product.");
             }
+            return false;
         }
         #endregion
 
@@ -125,45 +103,6 @@ namespace VendingMachine_TTD
             Console.ReadLine();
         }
         #endregion
-
-        public bool CheckSufficientBalance(string productName)
-        {
-            if (productName == product_1)
-            {
-                if (Total_Amount >= prod_1_Amount)
-                {
-                    Total_Amount = Total_Amount - prod_1_Amount;
-                    Console.WriteLine($"The Remaining Amount in your account is {Total_Amount}");
-                    return true;
-                }
-
-
-            }
-            else if (productName == product_2)
-            {
-                if (Total_Amount >= prod_2_Amount)
-                {
-                    Total_Amount = Total_Amount - prod_1_Amount;
-                    Console.WriteLine($"The Remaining Amount in your account is {Total_Amount}");
-                    return true;
-                }
-
-            }
-            else if (productName == product_3)
-            {
-                if (Total_Amount >= prod_3_Amount)
-                {
-                    Total_Amount = Total_Amount - prod_1_Amount;
-                    Console.WriteLine($"The Remaining Amount in your account is {Total_Amount}");
-                    return true;
-                }
-
-            }
-
-            return false;
-
-
-        }
 
     }
 
